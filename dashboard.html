@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCCOE Bank Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                PCCOE<span>BANK</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-target="dashboard-view"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+                <button class="nav-btn" data-target="customer-view"><i class="fa-solid fa-users"></i> Customers</button>
+                <button class="nav-btn" data-target="account-view"><i class="fa-solid fa-building-columns"></i> Accounts</button>
+                <button class="nav-btn" data-target="transaction-view"><i class="fa-solid fa-money-bill-transfer"></i> Transactions</button>
+                <button class="nav-btn" data-target="upi-view"><i class="fa-brands fa-google-pay"></i> UPI</button>
+                <button class="nav-btn" data-target="loan-view"><i class="fa-solid fa-hand-holding-dollar"></i> Loans</button>
+                <button class="nav-btn" data-target="payment-view"><i class="fa-solid fa-file-invoice-dollar"></i> EMI Payments</button>
+                <button class="nav-btn" data-target="employee-view"><i class="fa-solid fa-id-card-clip"></i> Employees</button>
+                <button class="nav-btn" data-target="atm-view"><i class="fa-solid fa-money-check-dollar"></i> ATMs</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>PCCOE Bank Management System</h1>
+                <div class="user-profile">
+                    <a href="/logout" class="logout-link">Logout</a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <!-- 1. Dashboard View -->
+                <section id="dashboard-view" class="view-section active">
+                    <div class="welcome-banner">
+                        <h2>Welcome</h2>
+                        <p>PCCOE Bank Management System Overview</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fa-solid fa-users"></i>
+                            <div>
+                                <h3 id="stat-customers">0</h3>
+                                <p>Total Customers</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <div>
+                                <h3 id="stat-accounts">0</h3>
+                                <p>Total Accounts</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                            <div>
+                                <h3 id="stat-transactions">0</h3>
+                                <p>Total Transactions</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Customer View -->
+                <section id="customer-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-user-plus"></i> Manage Customer</h3>
+                        <form id="customerForm">
+                            <input type="hidden" name="customer_id" id="cust_id">
+                            <div class="form-grid">
+                                <div class="input-group"><label>First Name*</label><input type="text" name="first_name" required></div>
+                                <div class="input-group"><label>Last Name*</label><input type="text" name="last_name" required></div>
+                                <div class="input-group"><label>Mobile Number*</label><input type="tel" name="mobile_number" required pattern="^[0-9]{10}$" title="Please enter exactly 10 digits"></div>
+                                <div class="input-group"><label>Email</label><input type="email" name="email"></div>
+                                <div class="input-group"><label>City</label><input type="text" name="city"></div>
+                                <div class="input-group"><label>Street</label><input type="text" name="street"></div>
+                                <div class="input-group"><label>Street No.</label><input type="text" name="street_no"></div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" id="btn-save-cust">Save Customer</button>
+                                <button type="button" class="btn-secondary" onclick="document.getElementById('customerForm').reset(); document.getElementById('cust_id').value=''; document.getElementById('btn-save-cust').innerText='Save Customer';">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="card table-section">
+                        <div class="table-header">
+                            <h3>Customer Directory</h3>
+                            <input type="text" class="search-bar" id="search-customer" placeholder="Search Customer..." onkeyup="filterTable('table-customer', this.value)">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-customer">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th><th>Name</th><th>Mobile</th><th>Email</th><th>City</th><th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Account View -->
+                <section id="account-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-wallet"></i> Manage Account</h3>
+                        <form id="accountForm">
+                            <input type="hidden" name="account_no" id="acc_id">
+                            <div class="form-grid">
+                                <div class="input-group"><label>Customer ID*</label><input type="number" name="customer_id" required></div>
+                                <div class="input-group"><label>Account Type*</label>
+                                    <select name="account_type" required>
+                                        <option value="Saving">Saving</option>
+                                        <option value="Current">Current</option>
+                                    </select>
+                                </div>
+                                <div class="input-group"><label>Initial Balance</label><input type="number" step="0.01" name="balance" value="0"></div>
+                                <div class="input-group"><label>Nominee Name</label><input type="text" name="nominee_name"></div>
+                                <div class="input-group"><label>Account Status</label>
+                                    <select name="account_status">
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" id="btn-save-acc">Open Account</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="card table-section">
+                        <div class="table-header">
+                            <h3>Account Directory</h3>
+                            <input type="text" class="search-bar" id="search-account" placeholder="Search Account..." onkeyup="filterTable('table-account', this.value)">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-account">
+                                <thead>
+                                    <tr><th>Acc No</th><th>Cust ID</th><th>Balance (₹)</th><th>Status</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Transactions View -->
+                <section id="transaction-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-arrow-right-arrow-left"></i> Perform Transaction</h3>
+                        <form id="transactionForm">
+                            <div class="form-grid">
+                                <div class="input-group"><label>Account No*</label><input type="number" name="account_no" required></div>
+                                <div class="input-group"><label>Type*</label>
+                                    <select name="transaction_type" required>
+                                        <option value="Deposit">Deposit</option>
+                                        <option value="Withdrawal">Withdrawal</option>
+                                    </select>
+                                </div>
+                                <div class="input-group"><label>Amount*</label><input type="number" step="0.01" name="amount" required></div>
+                                <div class="input-group"><label>Mode*</label>
+                                    <select name="transaction_mode" required>
+                                        <option value="Cash">Cash</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="ATM">ATM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn-primary">Execute Transaction</button></div>
+                        </form>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header">
+                            <h3>Transaction History</h3>
+                            <div class="table-filters" style="display: flex; gap: 10px;">
+                                <select id="filter-transaction-type" onchange="applyTransactionFilters()" style="padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                    <option value="All">All Types</option>
+                                    <option value="Deposit">Deposit</option>
+                                    <option value="Withdrawal">Withdrawal</option>
+                                </select>
+                                <input type="text" class="search-bar" placeholder="Search..." onkeyup="filterTable('table-transaction', this.value)">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-transaction">
+                                <thead><tr><th>Tx ID</th><th>Acc No</th><th>Type</th><th>Amount (₹)</th><th>Balance (₹)</th><th>Mode</th><th>UTR</th><th>Date</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. UPI View -->
+                <section id="upi-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-brands fa-google-pay"></i> UPI Status & Linkage</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Account No*</label>
+                                <input type="number" id="upi-search-acc" placeholder="Enter Acc No">
+                            </div>
+                            <div class="input-group">
+                                <label>Action</label>
+                                <button type="button" class="btn-primary btn-sm" onclick="fetchUPIStatus()">Search Account</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="upi-status-group" class="card" style="margin-top: 20px; display: none;">
+                        <div class="input-group">
+                            <label>UPI Linking Status</label>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                                <span id="upi-current-status" class="badge badge-inactive">Not Linked</span>
+                                <button type="button" class="btn-secondary btn-sm" onclick="toggleUPILink()">Update Link Status</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header">
+                            <h3>UPI Transaction History</h3>
+                            <div class="table-filters" style="display: flex; gap: 10px;">
+                                <select id="filter-upi-type" onchange="fetchUPIStatus()" style="padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                    <option value="All">All Types</option>
+                                    <option value="Deposit">Deposit</option>
+                                    <option value="Withdrawal">Withdrawal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-upi">
+                                <thead><tr><th>Tx ID</th><th>Acc No</th><th>Type</th><th>Amount (₹)</th><th>UTR No</th><th>Date</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. Loan View -->
+                <section id="loan-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-file-contract"></i> Apply & Manage Loans</h3>
+                        <form id="loanForm">
+                            <input type="hidden" name="loan_no" id="ln_id">
+                            <div class="form-grid">
+                                <div class="input-group"><label>Customer ID*</label><input type="number" name="customer_id" required></div>
+                                <div class="input-group"><label>Loan Amount*</label><input type="number" step="0.01" name="loan_amount" required></div>
+                                <div class="input-group"><label>CIBIL Score (300-900)*</label><input type="number" name="cibil_score" min="300" max="900" required></div>
+                                <div class="input-group"><label>Interest Rate (%)</label><input type="number" step="0.01" name="interest_rate" value="8.5"></div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn-primary" id="btn-save-loan">Save Loan</button></div>
+                        </form>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header"><h3>Loan Directory</h3><input type="text" class="search-bar" placeholder="Search..." onkeyup="filterTable('table-loan', this.value)"></div>
+                        <table class="data-table" id="table-loan">
+                            <thead><tr><th>Loan No</th><th>Cust ID</th><th>Amount (₹)</th><th>Rate</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 7. Payment View -->
+                <section id="payment-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-receipt"></i> Process EMI Payment</h3>
+                        <form id="paymentForm">
+                            <div class="form-grid">
+                                <div class="input-group"><label>Loan No*</label><input type="number" name="loan_no" required></div>
+                                <div class="input-group"><label>Paid Amount*</label><input type="number" step="0.01" name="paid_amount" required></div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn-primary">Record Payment</button></div>
+                        </form>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header"><h3>Payment History</h3><input type="text" class="search-bar" placeholder="Search..." onkeyup="filterTable('table-payment', this.value)"></div>
+                        <table class="data-table" id="table-payment">
+                            <thead><tr><th>Pay No</th><th>Loan No</th><th>Paid (₹)</th><th>Pending (₹)</th><th>Date</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 8. Employees View -->
+                <section id="employee-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-user-tie"></i> Manage Employees</h3>
+                        <form id="employeeForm">
+                            <input type="hidden" name="emp_id" id="emp_id">
+                            <div class="form-grid">
+                                <div class="input-group"><label>First Name*</label><input type="text" name="first_name" required></div>
+                                <div class="input-group"><label>Last Name*</label><input type="text" name="last_name" required></div>
+                                <div class="input-group"><label>Designation*</label>
+                                    <select name="designation" required>
+                                        <option value="Senior Manager">Senior Manager</option>
+                                        <option value="Manager">Manager</option>
+                                        <option value="Cashier">Cashier</option>
+                                    </select>
+                                </div>
+                                <div class="input-group"><label>Salary*</label><input type="number" step="0.01" name="salary" required></div>
+                                <div class="input-group"><label>Mobile No*</label><input type="tel" name="mobile_number" required pattern="^[0-9]{10}$" title="Exactly 10 digit number"></div>
+                                <div class="input-group"><label>City</label><input type="text" name="city"></div>
+                                <div class="input-group"><label>Street</label><input type="text" name="street"></div>
+                                <div class="input-group"><label>Street No.</label><input type="text" name="street_no"></div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn-primary" id="btn-save-emp">Save Employee</button></div>
+                        </form>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header"><h3>Employee Details</h3><input type="text" class="search-bar" placeholder="Search..." onkeyup="filterTable('table-employee', this.value)"></div>
+                        <table class="data-table" id="table-employee">
+                            <thead><tr><th>ID</th><th>Name</th><th>Designation</th><th>Salary (₹)</th><th>Mobile</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 10. ATM View -->
+                <section id="atm-view" class="view-section">
+                    <div class="card form-section">
+                        <h3><i class="fa-solid fa-money-bill-1-wave"></i> ATM Status & History</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Account No*</label>
+                                <input type="number" id="atm-search-acc" placeholder="Enter Acc No">
+                            </div>
+                            <div class="input-group">
+                                <label>Action</label>
+                                <button type="button" class="btn-primary btn-sm" onclick="fetchATMStatus()">Search Account</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="atm-status-group" class="card" style="margin-top: 20px; display: none;">
+                        <div class="input-group">
+                            <label>ATM Status</label>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                                <span id="atm-current-status" class="badge badge-inactive">Inactive</span>
+                                <button type="button" class="btn-secondary btn-sm" onclick="toggleATMStatus()">Update ATM Status</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card table-section">
+                        <div class="table-header">
+                            <h3>ATM Transaction History</h3>
+                            <select id="filter-atm-type" onchange="fetchATMStatus()" style="padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <option value="All">All Types</option>
+                                <option value="Deposit">Deposit</option>
+                                <option value="Withdrawal">Withdrawal</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-atm">
+                                <thead><tr><th>Tx ID</th><th>Acc No</th><th>Type</th><th>Amount (₹)</th><th>Date</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
